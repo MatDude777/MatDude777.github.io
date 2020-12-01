@@ -1,1 +1,58 @@
-<body>This is an experimental WIP converter for my "reverse" HTML language.</body>
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css" >
+<script>
+function process(text){
+  let converted = parser.parseString(text);
+  let el = document.querySelector("#converted").innerHTML = converted;
+}
+
+let text = `h2<simple Examples>
+
+Write b<important> stuff with span.myclass<classes>,
+span#logo<IDs> and a[href=http://reddit.com]<attributes>.
+b<i<Nesting>> is possible.
+
+h2<tables>
+If you close brackets and immediately open another one, the tag will be copied
+table<
+ tr<
+  td<Item1><Item2><Item3>
+ >
+ tr<
+  td[colspan=2]<1>td<2>
+ >
+>
+
+h2<lists>
+ol<
+ li< this
+  >< is
+  >< a
+  >< list
+>>
+
+h1<The stuff here is editable>
+h2<(on the left)>
+img[src=http://placekitten.com/200/300]< >
+images are ugly...`;
+
+let parser;
+import("./parse.js").then(res => {parser = res; parser.default().then(function(){
+    document.querySelector('#text').addEventListener("input",function(e){
+      process(e.target.innerText);
+    });
+   document.querySelector('#text').innerText = text;
+	process(text);
+}
+)});
+
+</script>
+<body>
+This is an experimental WIP converter for my "reverse" HTML language.
+
+<div class="editor">
+  <pre id="text" contenteditable="true"></pre>
+  <div id="converted"></div>
+</div>
+</body>

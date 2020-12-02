@@ -2,57 +2,120 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="style.css" >
 <script>
+
+//This page is just a hacky demonstration
+
 function process(text){
   let converted = parser.parseString(text);
-  let el = document.querySelector("#converted").innerHTML = converted;
+  document.querySelector("#converted").innerHTML = converted;
+  document.querySelector("#rawHTML").innerHTML = "";
+  document.querySelector("#rawHTML").appendChild(document.createTextNode(converted));
 }
 
 let text = `h2<simple Examples>
 
-Write b<important> stuff with span.myclass<classes>,
-span#logo<IDs> and a[href=http://reddit.com]<attributes>.
-b<i<Nesting>> is possible.
+Write b<important> stuff with span.myclass<classes>, span#myid<IDs> and a[href=http://reddit.com]<attributes>. b<i<Nesting>> is possible.
+
+important<This converter doesn't know a single thing about HTML (yet).
+It is not intended to develop your complex Web App
+I intend to use it for linear documents with custom tags & stylesheets like this>
 
 h2<tables>
 If you close brackets and immediately open another one, the tag will be copied
 table<
  tr<
   td<Item1><Item2><Item3>
- >
- tr<
-  td[colspan=2]<1>td<2>
+ ><
+  td[colspan=2]<colspan>td<next>
  >
 >
 
 h2<lists>
+This also works with lists
 ol<
  li< this
   >< is
   >< a
   >< list
 >>
-
+While this is much shorter then writing the tag all the time, I intend to support some Markdown like abbreviations, like using the Pipe | for tables or a simple - for lists.
 h1<The stuff here is editable>
 h2<(on the left)>
 img[src=http://placekitten.com/200/300]< >
-images are ugly...`;
+p<images are ugly... (everything has a closing tag...)>
+`;
 
 let parser;
-import("./parse.js").then(res => {parser = res; parser.default().then(function(){
+import("./parse.js").then(res => {
+  parser = res; parser.default().then(function(){
     document.querySelector('#text').addEventListener("input",function(e){
       process(e.target.innerText);
     });
-   document.querySelector('#text').innerText = text;
-	process(text);
-}
-)});
+    document.querySelector('#text').innerText = text;
+    process(text);
+    //Run once because something weired happens otherwise...
+    insertTextAtSelection(myDiv,"");
+
+  })
+});
 
 </script>
 <body>
+<div class="top">
 This is an experimental WIP converter for my "reverse" HTML language.
+</div>
 
 <div class="editor">
-  <pre id="text" contenteditable="true"></pre>
+  <div id="text" contenteditable="true" class="pre"></div>
   <div id="converted"></div>
+  <div id="rawHTML" class="pre"></div>
 </div>
+
+<script>
+//contenteditable="plaintext-only" Firefox Polyfill
+let myDiv = document.querySelector("#text");
+myDiv.addEventListener("keydown", e =>
+{
+  //override pressing enter in contenteditable
+  if (e.keyCode == 13)
+  {
+    //don't automatically put in divs
+    e.preventDefault();
+    e.stopPropagation();
+    //insert newline
+    insertTextAtSelection(myDiv, "\n");
+    process(document.querySelector('#text').innerText);
+  }
+});
+//override paste
+myDiv.addEventListener("paste", e => {
+  //cancel paste
+  e.preventDefault();
+  //get plaintext from clipboard
+  let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+  //insert text manually
+  insertTextAtSelection(myDiv, text);
+  process(document.querySelector('#text').innerText);
+});
+function insertTextAtSelection(div, txt)
+{
+  //get selection area so we can position insert
+  let sel = window.getSelection();
+  let text = div.innerText;
+  let before = Math.min(sel.focusOffset, sel.anchorOffset);
+  let after = Math.max(sel.focusOffset, sel.anchorOffset);
+  //ensure string ends with \n so it displays properly
+  let afterStr = text.substring(after);
+  if (afterStr == "") afterStr = "\n";
+  //insert content
+  div.textContent = text.substring(0, before) + txt + afterStr;
+  //restore cursor at correct position
+  sel.removeAllRanges();
+  let range = document.createRange();
+  //childNodes[0] should be all the text
+  range.setStart(div.childNodes[0], before + txt.length);
+  range.setEnd(div.childNodes[0], before + txt.length);
+  sel.addRange(range);
+}
+</script>
 </body>

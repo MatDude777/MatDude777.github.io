@@ -1,12 +1,53 @@
+.top {
+  text-align: center;
+}
 .editor {
   display: flex;
-  box-shadow: 5px 5px 3px 0px gray;
-  background: #eee;
-}
-#text {
-width:50%;
 }
 
-#converted {
-width:50%;
+.editor div{
+  box-shadow: 5px 5px 3px 0px gray;
+  background: #eee;
+  width:50%;
+  margin: 20px;
+  padding: 10px;
+  font-size: 14px;
+}
+.hidden {
+  display: none;
+}
+important {
+ background: #e5e5e5;
+ margin: 10px;
+ padding: 5px;
+ box-shadow: 5px 5px 3px 0px gray;
+ white-space: pre-wrap;
+ display: flex;
+}
+
+important::before {
+  content: "!";
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 4em;
+  width:60px;
+  text-align:center;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align:center;
+}
+
+.pre {
+  white-space: pre-wrap;
+}
+
+.myclass {
+  color: blue;
+}
+
+#myid {
+  color: red;
 }

@@ -41,8 +41,10 @@ ol<
 While this is much shorter then writing the tag all the time, I intend to support some Markdown like abbreviations, like using the Pipe | for tables or a simple - for lists.
 h1<The stuff here is editable>
 h2<(on the left)>
-img[src=https://placekitten.com/400/200]< >
-p<images are ugly... (everything has a closing tag...)>
+img[src=https://placekitten.com/400/200]<>
+p<If there is no content between the brackets&lt;&gt;, the closing tag is omitted. Good for img and br.>
+
+p<There is no escape for &lt; &gt; yet, but HTML codes work fine.>
 `;
 
 let parser;
